@@ -70,7 +70,8 @@ function tropicalToLatex(unicodeStr) {
     .replace(/x⁶/g, ' x^6')
     .replace(/x⁷/g, ' x^7')
     .replace(/x⁸/g, ' x^8')
-    .replace(/x⁹/g, ' x^9');
+    .replace(/x⁹/g, ' x^9')
+    .replace(/ᵀ/g, '^T');
 }
 
 function convertToLatex() {
