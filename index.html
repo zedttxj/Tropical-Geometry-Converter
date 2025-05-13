@@ -1,59 +1,85 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tropical Polynomial Formatter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tropical LaTeX Formatter</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    input, button { padding: 0.5rem; margin: 0.3rem; }
-    #output { margin-top: 1.5rem; font-size: 1.2rem; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f9f9f9;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+    #output {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
-  <h1>Tropical Polynomial Formatter</h1>
 
-  <label>Array A (comma-separated):</label><br />
-  <input type="text" id="arrayA" placeholder="e.g. 7,4,3,2" /><br />
+<h2>Tropical Unicode to LaTeX Converter</h2>
 
-  <label>Array B (comma-separated):</label><br />
-  <input type="text" id="arrayB" placeholder="e.g. 5,3,1" /><br />
+<textarea id="unicodeInput" placeholder="Paste your tropical Unicode expression here...">(μ₁⨂𝜈₁)⨂x⁰⊕(μ₂⨂𝜈₁⊕μ₁⨂𝜈₂)⨂x¹</textarea>
+<br/>
+<button onclick="convertToLatex()">Convert to LaTeX</button>
 
-  <button onclick="formatTropical()">Format Polynomial</button>
+<div id="output">Output will appear here...</div>
 
-  <div id="output">\(\text{Output will appear here}\)</div>
+<script>
+function tropicalToLatex(unicodeStr) {
+  return unicodeStr
+    .replace(/μ/g, '\\mu_{')
+    .replace(/𝜈/g, '\\nu_{')
+    .replace(/₀/g, '0}')
+    .replace(/₁/g, '1}')
+    .replace(/₂/g, '2}')
+    .replace(/₃/g, '3}')
+    .replace(/₄/g, '4}')
+    .replace(/₅/g, '5}')
+    .replace(/₆/g, '6}')
+    .replace(/₇/g, '7}')
+    .replace(/₈/g, '8}')
+    .replace(/₉/g, '9}')
+    .replace(/⨂/g, '\\otimes')
+    .replace(/⊕/g, '\\oplus')
+    .replace(/x⁰/g, 'x^0')
+    .replace(/x¹/g, 'x^1')
+    .replace(/x²/g, 'x^2')
+    .replace(/x³/g, 'x^3')
+    .replace(/x⁴/g, 'x^4')
+    .replace(/x⁵/g, 'x^5')
+    .replace(/x⁶/g, 'x^6')
+    .replace(/x⁷/g, 'x^7')
+    .replace(/x⁸/g, 'x^8')
+    .replace(/x⁹/g, 'x^9');
+}
 
-  <script>
-    function toSubscript(num) {
-      const subs = ['\u2080','\u2081','\u2082','\u2083','\u2084','\u2085','\u2086','\u2087','\u2088','\u2089'];
-      return [...num.toString()].map(d => subs[parseInt(d)]).join('');
-    }
+function convertToLatex() {
+  const unicode = document.getElementById("unicodeInput").value;
+  const latex = tropicalToLatex(unicode);
+  document.getElementById("output").innerHTML = `\\(${latex}\\)`;
+  MathJax.typeset();
+}
+</script>
 
-    function formatTropical() {
-      const A = document.getElementById('arrayA').value.split(',').map(s => s.trim()).filter(Boolean);
-      const B = document.getElementById('arrayB').value.split(',').map(s => s.trim()).filter(Boolean);
-
-      let result = '';
-      const maxDegree = A.length + B.length - 2;
-
-      for (let d = 0; d <= maxDegree; d++) {
-        let terms = [];
-        for (let i = 0; i < A.length; i++) {
-          const j = d - i;
-          if (j >= 0 && j < B.length) {
-            terms.push(`\mu${toSubscript(i+1)} \otimes \nu${toSubscript(j+1)}`);
-          }
-        }
-        const term = terms.join(' \oplus ');
-        result += `(${term}) \otimes x${toSubscript(d)}`;
-        if (d < maxDegree) result += ' \oplus ';
-      }
-
-      document.getElementById('output').innerHTML = `\\(${result}\\)`;
-      MathJax.typeset();
-    }
-  </script>
 </body>
 </html>
